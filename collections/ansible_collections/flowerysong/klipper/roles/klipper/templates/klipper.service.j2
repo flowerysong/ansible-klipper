@@ -1,0 +1,13 @@
+[Unit]
+Description=Klipper 3D Printer Firmware
+After=network.target
+[Install]
+WantedBy=multi-user.target
+[Service]
+Type=simple
+User={{ klipper_user }}
+RuntimeDirectory=klipper
+RemainAfterExit=yes
+ExecStart={{ install_base }}/venv/klippy/bin/python {{ install_base }}/klipper/klippy/klippy.py {{ install_base }}/printer_data/config/klipper.cfg -l {{ install_base }}/printer_data/logs/klipper.log -I /run/klipper/input -a /run/klipper/api
+Restart=always
+RestartSec=10

@@ -1,0 +1,59 @@
+- tags:
+    - moonraker
+  become: true
+  block:
+    - name: Install system packages
+      ansible.builtin.apt:
+        name:
+          - libopenjp2-7
+          - python3-libgpiod
+          - curl
+          - libcurl4-openssl-dev
+          - libssl-dev
+          - liblmdb-dev
+          - libsodium-dev
+          - zlib1g-dev
+          - libjpeg-dev
+          - packagekit
+          - wireless-tools
+        state: latest
+
+    - become_user: "{{ klipper_user }}"
+      block:
+        - name: Clone moonraker
+          ansible.builtin.git:
+            dest: "{{ install_base }}/moonraker"
+            repo: https://github.com/Arksine/moonraker
+            version: 80920dd8723b7dac6d176500fed88d81149f22b2
+          register: install_result
+
+        - name: Create virtualenv
+          ansible.builtin.pip:
+            requirements: "{{ install_base }}/moonraker/scripts/moonraker-requirements.txt"
+            state: present
+            virtualenv: "{{ install_base }}/venv/moonraker"
+            virtualenv_python: python3
+
+        - name: Configure moonraker
+          ansible.builtin.copy:
+            dest: "{{ install_base }}/printer_data/config/moonraker.conf"
+            src: moonraker.conf
+          register: config_result
+
+    - name: Install systemd service
+      ansible.builtin.template:
+        dest: /etc/systemd/system/moonraker.service
+        src: moonraker.service.j2
+        owner: root
+        group: root
+        mode: "0644"
+      register: service_result
+
+    - name: Enable and start systemd service
+      ansible.builtin.systemd:
+        daemon_reload: true
+        name: moonraker
+        state: "{{ 'restarted' if needs_restart else 'started' }}"
+        enabled: true
+      vars:
+        needs_restart: "{{ [ install_result, config_result, service_result ] | select('changed') }}"

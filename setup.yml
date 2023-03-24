@@ -1,0 +1,13 @@
+- hosts: klipper
+  tasks:
+    - import_role:
+        name: flowerysong.klipper.base
+
+    - import_role:
+        name: flowerysong.klipper.klipper
+
+    - import_role:
+        name: flowerysong.klipper.moonraker
+
+    - import_role:
+        name: flowerysong.klipper.mainsail

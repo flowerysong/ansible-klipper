@@ -1,0 +1,7 @@
+klipper:
+  hosts:
+    cetus:
+      ansible_host: 172.24.0.148
+      ansible_user: orangepi
+      klipper_user: klipper
+      install_base: /home/klipper

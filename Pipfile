@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+paramiko = "*"
+PyYAML = "*"
+Jinja2 = "*"
+PrettyTable = "*"
+ansible-core = "<2.14"  # 2.14 requires Python 3.9
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"

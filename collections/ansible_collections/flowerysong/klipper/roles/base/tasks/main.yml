@@ -1,0 +1,48 @@
+- tags:
+    - base
+  become: true
+  block:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600   # 10 minutes
+
+    - name: Install base packages
+      ansible.builtin.apt:
+        name:
+          - acl
+          - build-essential
+          - python3-dev
+          - python3-setuptools
+          - python3-pip
+          - python3-virtualenv
+        state: latest
+
+    - name: Upgrade packages
+      ansible.builtin.apt:
+        upgrade: dist
+      register: result
+
+    - name: Reboot if packages changed
+      ansible.builtin.reboot:
+      when: result is changed
+
+    - name: Create klipper user
+      ansible.builtin.user:
+        name: "{{ klipper_user }}"
+        comment: Klipper
+        groups:
+          - dialout
+        state: present
+
+    - become_user: "{{ klipper_user }}"
+      block:
+        - name: Create basic directory structure
+          ansible.builtin.file:
+            dest: "{{ install_base }}/{{ item }}"
+            state: directory
+          loop:
+            - printer_data
+            - printer_data/config
+            - printer_data/logs
+            - venv

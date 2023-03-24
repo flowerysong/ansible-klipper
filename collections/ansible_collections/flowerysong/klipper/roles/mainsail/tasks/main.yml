@@ -1,0 +1,58 @@
+- tags:
+    - mainsail
+  become: true
+  block:
+    - name: Install system packages
+      ansible.builtin.apt:
+        name:
+          - nginx
+        state: latest
+
+    - name: Configure nginx
+      ansible.builtin.copy:
+        dest: /etc/nginx/conf.d/{{ item }}
+        src: "{{ item }}"
+        owner: root
+        group: root
+        mode: "0644"
+      loop:
+        - common_vars.conf
+        - upstreams.conf
+
+    - name: Configure nginx site
+      ansible.builtin.template:
+        dest: /etc/nginx/sites-available/mainsail
+        src: site.j2
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Disable default site
+      ansible.builtin.file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Enable mainsail site
+      ansible.builtin.file:
+        path: /etc/nginx/sites-enabled/mainsail
+        state: link
+        src: /etc/nginx/sites-available/mainsail
+
+    - name: Start nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: restarted
+        enabled: true
+
+    - become_user: "{{ klipper_user }}"
+      block:
+        - name: Create mainsail root
+          ansible.builtin.file:
+            dest: "{{ install_base }}/mainsail"
+            state: directory
+
+        - name: Install mainsail
+          ansible.builtin.unarchive:
+            dest: "{{ install_base }}/mainsail"
+            src: https://github.com/mainsail-crew/mainsail/releases/download/v2.5.0/mainsail.zip
+            remote_src: true
