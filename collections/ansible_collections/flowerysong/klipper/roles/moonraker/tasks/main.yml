@@ -24,7 +24,7 @@
           ansible.builtin.git:
             dest: "{{ install_base }}/moonraker"
             repo: https://github.com/Arksine/moonraker
-            version: 80920dd8723b7dac6d176500fed88d81149f22b2
+            version: 6c7dfe592131eb95fd760ef2db83387966b250f0
           register: install_result
 
         - name: Create virtualenv

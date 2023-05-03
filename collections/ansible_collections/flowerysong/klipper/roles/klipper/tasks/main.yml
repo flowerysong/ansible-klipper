@@ -26,7 +26,7 @@
           ansible.builtin.git:
             dest: "{{ install_base }}/klipper"
             repo: https://github.com/Klipper3d/klipper
-            version: fd167894a0792f2b351d4931f04cbec87b0281bd
+            version: 1a24e7c5b683355335b115e5659eb6fe8c8d11dc
           register: install_result
 
         - name: Create virtualenv
