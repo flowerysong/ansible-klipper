@@ -38,8 +38,12 @@
 
         - name: Configure klipper
           ansible.builtin.copy:
-            dest: "{{ install_base }}/printer_data/config/klipper.cfg"
-            src: klipper.cfg
+            dest: "{{ install_base }}/printer_data/config/{{ item }}"
+            src: "{{ item }}"
+          loop:
+            - klipper.cfg
+            - mainsail.cfg
+            - printer.cfg
           register: config_result
 
         - name: Configure firmware
