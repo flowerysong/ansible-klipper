@@ -54,5 +54,5 @@
         - name: Install mainsail
           ansible.builtin.unarchive:
             dest: "{{ install_base }}/mainsail"
-            src: https://github.com/mainsail-crew/mainsail/releases/download/v2.5.1/mainsail.zip
+            src: https://github.com/mainsail-crew/mainsail/releases/download/v2.6.0/mainsail.zip
             remote_src: true
